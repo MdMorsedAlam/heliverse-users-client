@@ -3,6 +3,7 @@ import { cleareUsers, removeUser } from "../../redux/features/teams/teamSlice";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../pages/Loading/Loading";
+import Swal from "sweetalert2";
 
 const RightSidebar = () => {
   const { teamUsers } = useSelector((state) => state.teamSlice);
@@ -29,11 +30,16 @@ const RightSidebar = () => {
     axiosPublic
       .post("/add-team", { teamData })
       .then(() => {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `Created New ${teamName} Team`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
         refetch();
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch();
     form.reset();
     dispatch(cleareUsers());
   };
@@ -42,11 +48,21 @@ const RightSidebar = () => {
     axiosPublic
       .delete(`/delete-team/${id}`)
       .then(() => {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Deleted The Team",
+          showConfirmButton: false,
+          timer: 1500,
+        });
         refetch();
       })
       .catch((err) => {
         console.log(err);
       });
+  };
+  const hadelOpenModal = (item) => {
+    console.log(item);
   };
   if (isLoading) {
     return <Loading />;
@@ -60,7 +76,12 @@ const RightSidebar = () => {
             className="flex justify-between p-5 bg-slate-200 items-center rounded-lg shadow-2xl"
             key={item._id}
           >
-            <h1 className="cursor-pointer">{item.teamName}</h1>
+            <button
+              onClick={() => hadelOpenModal(item)}
+              className="text-xl font-semibold"
+            >
+              {item.teamName}
+            </button>
             <button
               onClick={() => handleDeleteTeam(item._id)}
               className="px-2 font-bold text-white py-1 bg-blue-400 rounded-md mr-2"

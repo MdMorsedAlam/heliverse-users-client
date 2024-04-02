@@ -24,16 +24,17 @@ const LeftSidebar = ({
           name="gender"
           onChange={(e) => setGender(e.target.value)}
         >
-          <option value="">Option</option>
+          <option value="">Select Gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
+
         <select
           className="p-3 w-full font-semibold placeholder-gray-500 text-black rounded-xl border-none ring-2 ring-gray-300 focus:ring-gray-500 focus:ring-2"
           name="gender"
           onChange={(e) => setDomain(e.target.value)}
         >
-          <option value="">Option</option>
+          <option value="">Select Domain</option>
           <option value="Marketing">Marketing</option>
           <option value="IT">IT</option>
         </select>

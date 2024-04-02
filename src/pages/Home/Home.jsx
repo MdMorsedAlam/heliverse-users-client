@@ -7,6 +7,7 @@ import RightSidebar from "../../components/RightSidebar/RightSidebar";
 import LeftSidebar from "../../components/LeftSideBar/LeftSidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../../redux/features/teams/teamSlice";
+import Swal from "sweetalert2";
 const Home = () => {
   const axiosPublic = useAxiosPublic();
   const [count, setCount] = useState(null);
@@ -38,8 +39,6 @@ const Home = () => {
       return res.data;
     },
   });
-  console.log(allUsers);
-  console.log(available);
   if (gender && !domain && !available) {
     allUsers = allUsers.filter((user) => user.gender === gender);
   }
@@ -69,7 +68,11 @@ const Home = () => {
       (user) => user.domain === item.domain
     );
     if (checkDubplicate) {
-      alert("Please try new");
+      Swal.fire({
+        title: "Oppss!",
+        text: "Can't Select Same Domain In One Team ",
+        icon: "error",
+      });
     } else {
       const id = item._id;
       const name = item.first_name + " " + item.last_name;
@@ -77,6 +80,13 @@ const Home = () => {
 
       const userData = { id, domain, name };
       dispatch(addUser(userData));
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Added To Team List",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 
@@ -93,12 +103,17 @@ const Home = () => {
         setAvilable={setAvilable}
       />
       <div className="border col-span-4 py-5 px-3">
-      <h1 className="text-red-500 text-3xl text-center font-bold mb-10">All Users</h1>
+        <h1 className="text-red-500 text-3xl text-center font-bold mb-10">
+          All Users
+        </h1>
         <div className="grid grid-cols-2 gap-4">
           {allUsers?.map((item) => (
-            <div className="bg-stone-200 shadow-xl rounded-lg" key={item._id}>
+            <div
+              className="bg-stone-200 p-2 shadow-xl rounded-lg"
+              key={item._id}
+            >
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center">
                   <img
                     className="w-12 h-12 rounded-full"
                     src={item.avatar}
@@ -118,12 +133,12 @@ const Home = () => {
                   </button>
                 </div>
               </div>
-              <div className="pl-16 pb-3">
+              <div className="pl-3 py-3">
                 <h3 className="text-lg font-semibold">
                   Gender : <span className="text-gray-600">{item.gender}</span>
                 </h3>
                 <h3 className="text-lg font-semibold">
-                  Domail : <span className="text-gray-600">{item.domain}</span>
+                  Domain : <span className="text-gray-600">{item.domain}</span>
                 </h3>
                 <h3 className="text-lg font-semibold">
                   Email : <span className="text-gray-600">{item.email}</span>
