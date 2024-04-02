@@ -4,10 +4,15 @@ import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../pages/Loading/Loading";
 import Swal from "sweetalert2";
+import { useState } from "react";
+import Modal from "../Modal/Modal";
 
 const RightSidebar = () => {
   const { teamUsers } = useSelector((state) => state.teamSlice);
   const axiosPublic = useAxiosPublic();
+  const [open, setOpen] = useState(false);
+  const [teamData, setTeamData] = useState([]);
+  const [teamLoading, setTeamLoading] = useState(true);
   const dispatch = useDispatch();
 
   const {
@@ -62,7 +67,15 @@ const RightSidebar = () => {
       });
   };
   const hadelOpenModal = (item) => {
-    console.log(item);
+    setTeamLoading(true);
+    axiosPublic
+      .get(`/get-team-users?id=${item._id}`)
+      .then((res) => {
+        setTeamData(res.data);
+        setTeamLoading(false);
+      })
+      .catch(setTeamLoading(false));
+    setOpen(!open);
   };
   if (isLoading) {
     return <Loading />;
@@ -91,6 +104,7 @@ const RightSidebar = () => {
           </div>
         ))}
       </div>
+
       <hr className="h-2 bg-red-600 w-full my-10" />
       <h1 className="text-red-500 text-3xl text-center font-bold mb-10">
         New Team
@@ -133,6 +147,12 @@ const RightSidebar = () => {
       ) : (
         ""
       )}
+      <Modal
+        open={open}
+        teamLoading={teamLoading}
+        teamData={teamData}
+        setOpen={setOpen}
+      />
     </div>
   );
 };
