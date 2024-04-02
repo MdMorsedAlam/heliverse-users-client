@@ -17,6 +17,9 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const dispatch = useDispatch();
   const { teamUsers } = useSelector((state) => state.teamSlice);
+  const [gender, setGender] = useState("");
+  const [domain, setDomain] = useState("");
+  const [available, setAvilable] = useState("");
   useEffect(() => {
     axiosPublic
       .get("/count-users")
@@ -26,7 +29,7 @@ const Home = () => {
       .catch();
   }, [axiosPublic]);
 
-  const { isLoading, data: allUsers } = useQuery({
+  let { isLoading, data: allUsers } = useQuery({
     queryKey: [currentPage, usersPerPage, searchData],
     queryFn: async () => {
       const res = await axiosPublic.get(
@@ -35,6 +38,31 @@ const Home = () => {
       return res.data;
     },
   });
+  console.log(allUsers);
+  console.log(available);
+  if (gender && !domain && !available) {
+    allUsers = allUsers.filter((user) => user.gender === gender);
+  }
+  if (gender && domain && !available) {
+    allUsers = allUsers.filter(
+      (user) => user.gender === gender && user.domain === domain
+    );
+  }
+  if (gender && domain && available) {
+    allUsers = allUsers.filter(
+      (user) =>
+        user.gender === gender &&
+        user.domain === domain &&
+        user.available === true
+    );
+  }
+  if (!gender && domain && !available) {
+    allUsers = allUsers.filter((user) => user.domain === domain);
+  }
+
+  if (available) {
+    allUsers = allUsers.filter((user) => user.available === true);
+  }
 
   const handelCreateTeam = (item) => {
     const checkDubplicate = teamUsers.find(
@@ -57,8 +85,15 @@ const Home = () => {
   }
   return (
     <div className="grid grid-cols-8 container mx-auto">
-      <LeftSidebar setSearchData={setSearchData} searchData={searchData} />
-      <div className="border col-span-4 py-10 px-3">
+      <LeftSidebar
+        setGender={setGender}
+        setSearchData={setSearchData}
+        searchData={searchData}
+        setDomain={setDomain}
+        setAvilable={setAvilable}
+      />
+      <div className="border col-span-4 py-5 px-3">
+      <h1 className="text-red-500 text-3xl text-center font-bold mb-10">All Users</h1>
         <div className="grid grid-cols-2 gap-4">
           {allUsers?.map((item) => (
             <div className="bg-stone-200 shadow-xl rounded-lg" key={item._id}>
